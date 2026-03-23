@@ -19,6 +19,9 @@ interface SimulationSummaryData {
   falsePositivesRecovered: number;
   legitBlockedByMistake: number;
   revenueRecovered: number;
+  avgTransactionValue: number;
+  monthlyProjectedRecovery: number;
+  sampleSize: number;
 }
 
 interface StepStatus {
@@ -260,130 +263,98 @@ export default function RuleOptimizer({ isDemoMode }: RuleOptimizerProps) {
 
       {/* Simulation results */}
       {simulation && (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="px-5 py-3 border-b border-gray-100 bg-gray-50">
-            <h3 className="text-sm font-semibold text-gray-700">Simulation Results</h3>
-          </div>
-          <div className="p-5">
-            {/* Before/After counts */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="space-y-4">
+          {/* Business Impact highlight card */}
+          <div className="bg-gradient-to-br from-purple-50 to-green-50 border border-purple-200 rounded-xl p-5 shadow-sm">
+            <h3 className="text-sm font-semibold text-gray-700 mb-1">Business Impact</h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Based on this {simulation.summary.sampleSize}-transaction sample · projected to 1,000 txn/mo baseline
+            </p>
+            <div className="grid grid-cols-3 gap-4">
               <div>
-                <p className="text-xs font-medium text-gray-500 mb-2">Before Rule</p>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-green-700">Passed</span>
-                    <span className="font-medium tabular-nums">{simulation.before.pass ?? 0}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-red-700">Blocked</span>
-                    <span className="font-medium tabular-nums">{simulation.before.block ?? 0}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-yellow-700">Review</span>
-                    <span className="font-medium tabular-nums">{simulation.before.review ?? 0}</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 mb-2">After Rule</p>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-green-700">Passed</span>
-                    <span className="font-medium tabular-nums">{simulation.after.pass ?? 0}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-red-700">Blocked</span>
-                    <span className="font-medium tabular-nums">{simulation.after.block ?? 0}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-yellow-700">Review</span>
-                    <span className="font-medium tabular-nums">{simulation.after.review ?? 0}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Key metrics */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
-                <p className="text-2xl font-bold text-green-700 tabular-nums">
+                <p className="text-3xl font-bold text-green-700 tabular-nums">
                   {simulation.summary.falsePositivesRecovered}
                 </p>
-                <p className="text-xs text-green-600 mt-0.5">False positives recovered</p>
+                <p className="text-xs text-gray-600 mt-1">False positives recovered</p>
               </div>
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center">
-                <p className="text-2xl font-bold text-purple-700 tabular-nums">
-                  ${(simulation.summary.revenueRecovered / 100).toFixed(2)}
+              <div>
+                <p className="text-3xl font-bold text-purple-700 tabular-nums">
+                  ${(simulation.summary.monthlyProjectedRecovery / 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
-                <p className="text-xs text-purple-600 mt-0.5">Revenue recovered</p>
+                <p className="text-xs text-gray-600 mt-1">Est. revenue recovered/mo</p>
               </div>
-              <div
-                className={`${
-                  simulation.summary.legitBlockedByMistake > 0
-                    ? 'bg-red-50 border-red-200'
-                    : 'bg-gray-50 border-gray-200'
-                } border rounded-lg p-3 text-center col-span-2 sm:col-span-1`}
-              >
-                <p
-                  className={`text-2xl font-bold tabular-nums ${
-                    simulation.summary.legitBlockedByMistake > 0 ? 'text-red-700' : 'text-gray-500'
-                  }`}
-                >
+              <div>
+                <p className={`text-3xl font-bold tabular-nums ${simulation.summary.legitBlockedByMistake > 0 ? 'text-red-600' : 'text-gray-400'}`}>
                   {simulation.summary.legitBlockedByMistake}
                 </p>
-                <p
-                  className={`text-xs mt-0.5 ${
-                    simulation.summary.legitBlockedByMistake > 0 ? 'text-red-600' : 'text-gray-500'
-                  }`}
-                >
-                  Legit transactions blocked by mistake
-                </p>
+                <p className="text-xs text-gray-600 mt-1">Legit transactions newly blocked</p>
               </div>
             </div>
+            <div className="mt-4 pt-4 border-t border-purple-100 text-xs text-gray-500">
+              Avg transaction value: <span className="font-semibold text-gray-700">${(simulation.summary.avgTransactionValue / 100).toFixed(2)}</span>
+              {' · '}
+              Revenue in this sample: <span className="font-semibold text-gray-700">${(simulation.summary.revenueRecovered / 100).toFixed(2)}</span>
+            </div>
+          </div>
 
-            {/* Changed transactions */}
-            {simulation.changes.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold text-gray-600 mb-2">
-                  Changed Transactions ({simulation.changes.length})
-                </p>
-                <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                  {simulation.changes.map((change) => (
-                    <div
-                      key={change.transactionId}
-                      className="flex items-center gap-2 text-xs bg-gray-50 border border-gray-200 rounded p-2"
-                    >
-                      <span className="font-mono text-gray-600 truncate flex-1">
-                        {change.transactionId}
-                      </span>
-                      <span
-                        className={`px-1.5 py-0.5 rounded font-medium ${
-                          change.from === 'pass'
-                            ? 'bg-green-100 text-green-800'
-                            : change.from === 'block'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}
-                      >
-                        {change.from}
-                      </span>
-                      <span className="text-gray-400">→</span>
-                      <span
-                        className={`px-1.5 py-0.5 rounded font-medium ${
-                          change.to === 'pass'
-                            ? 'bg-green-100 text-green-800'
-                            : change.to === 'block'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}
-                      >
-                        {change.to}
-                      </span>
-                    </div>
-                  ))}
+          {/* Before/After detail */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="px-5 py-3 border-b border-gray-100 bg-gray-50">
+              <h3 className="text-sm font-semibold text-gray-700">Transaction Outcome Breakdown</h3>
+            </div>
+            <div className="p-5">
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <p className="text-xs font-medium text-gray-500 mb-2">Before Rule</p>
+                  <div className="space-y-1">
+                    {[['Passed', 'green', simulation.before.pass ?? 0], ['Blocked', 'red', simulation.before.block ?? 0], ['Review', 'yellow', simulation.before.review ?? 0]].map(([label, color, val]) => (
+                      <div key={String(label)} className="flex justify-between text-sm">
+                        <span className={`text-${color}-700`}>{label}</span>
+                        <span className="font-medium tabular-nums">{val}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 mb-2">After Rule</p>
+                  <div className="space-y-1">
+                    {[['Passed', 'green', simulation.after.pass ?? 0], ['Blocked', 'red', simulation.after.block ?? 0], ['Review', 'yellow', simulation.after.review ?? 0]].map(([label, color, val]) => (
+                      <div key={String(label)} className="flex justify-between text-sm">
+                        <span className={`text-${color}-700`}>{label}</span>
+                        <span className="font-medium tabular-nums">{val}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            )}
+
+              {simulation.changes.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-600 mb-2">
+                    Changed Transactions ({simulation.changes.length})
+                  </p>
+                  <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                    {simulation.changes.map((change) => (
+                      <div
+                        key={change.transactionId}
+                        className="flex items-center gap-2 text-xs bg-gray-50 border border-gray-200 rounded p-2"
+                      >
+                        <span className="font-mono text-gray-600 truncate flex-1">
+                          {change.transactionId}
+                        </span>
+                        <span className={`px-1.5 py-0.5 rounded font-medium ${change.from === 'pass' ? 'bg-green-100 text-green-800' : change.from === 'block' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                          {change.from}
+                        </span>
+                        <span className="text-gray-400">→</span>
+                        <span className={`px-1.5 py-0.5 rounded font-medium ${change.to === 'pass' ? 'bg-green-100 text-green-800' : change.to === 'block' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                          {change.to}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

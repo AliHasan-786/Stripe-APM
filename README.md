@@ -8,21 +8,53 @@ An AI-powered tool that explains Stripe Radar fraud decisions in plain English �
 
 ## Why this matters for Stripe
 
-Stripe Radar blocks ~1.6% of all payment volume as suspected fraud. A meaningful portion of those blocks are false positives — legitimate customers flagged by overly broad rules. The result: lost revenue, frustrated customers, and overwhelmed support teams who can't explain _why_ a payment was blocked.
+Stripe Radar blocks ~1.6% of all payment volume as suspected fraud. A meaningful portion of those blocks are false positives — legitimate customers flagged by overly broad rules. For a merchant processing $500K/month, that's roughly $8,000/month in lost revenue from good customers who never get a second chance.
 
 Radar Copilot solves three specific problems:
 
 1. **"Why was this blocked?"** — Merchants and developers get an instant, structured AI explanation of every fraud decision, in both technical and plain-English formats.
-2. **"How do I fix my rules?"** — A 5-step agentic optimizer identifies false positive patterns across a transaction set and generates targeted Radar DSL rules to recover that revenue.
-3. **"What's the risk?"** — Every generated rule is simulated against real transaction history before being recommended, with a clear tradeoff analysis.
+2. **"How do I fix my rules?"** — A 5-step agentic optimizer identifies false positive patterns across a transaction set and generates targeted Stripe Radar DSL rules to recover that revenue.
+3. **"What's the risk?"** — Every generated rule is simulated against real transaction history before being recommended, with a concrete business impact estimate (revenue recovered/month) and tradeoff analysis.
+
+## Product Decisions
+
+This section explains the *why* behind the design — the tradeoffs I made, not just the features I shipped.
+
+### Why false positives, not fraud detection?
+
+Stripe already detects fraud. The unsolved problem is that Radar's default rules block ~1-3% of legitimate transactions with no explanation. For a $1M GMV merchant, that's $10-30K/month in lost revenue from good customers. I framed the tool around **recovery**, not detection, because that's where merchant pain is actually concentrated and underserved.
+
+### Why simulate before deploying a rule?
+
+The worst outcome for a merchant isn't missing a fraudulent charge — it's deploying a Radar rule that accidentally blocks an entire customer segment (e.g., all 3DS-authenticated Gmail users from Canada). The simulation step forces impact assessment before any change goes live. It's the difference between "here is a rule" and "here is a rule that recovers $840/month and blocks 0 legitimate customers."
+
+### Why three explanation views (Risk Signals / Developer / Merchant)?
+
+The same fraud decision means different things to different people. A developer debugging an integration needs raw signal data. A merchant support rep needs language they can use with a customer. A risk analyst needs the pattern recognition rationale. Presenting one undifferentiated explanation serves no one well — so I split it into three views optimized for each audience.
+
+### Why an agentic loop instead of a single AI call?
+
+A single prompt asking "give me a better Radar rule" produces generic output. The 5-step loop — fetch data → identify candidates → generate rule → simulate → analyze tradeoffs — forces the AI to ground its recommendation in actual transaction data and quantify the impact. Each step's output feeds the next, so the final recommendation is falsifiable: you can see exactly which transactions it would change and why.
+
+### What I'd measure
+
+If this shipped inside Stripe, I'd track:
+- **False positive rate reduction (%)** — per merchant, 30-day rolling average after rule deployment
+- **Revenue recovered per merchant per month** ($) — the primary business outcome
+- **Time from "blocked transaction alert" to rule deployed** (hours) — a proxy for how much work the tool removes
+- **Rule deployment rate** — % of optimizer runs that result in a rule being saved to Radar, as a measure of recommendation quality
+
+### What I'd build next (and why not yet)
+
+The most valuable next step is **collaborative rule review** — letting multiple team members comment on a proposed rule before it goes live, with a clear approval workflow. I didn't build this because the core value (generating a good rule + quantifying its impact) needs to be validated first. Adding collaboration before the single-player experience is proven would be premature.
 
 ## Features
 
 - **Transaction Explorer** — Browse and filter Stripe transactions by outcome, risk score, and false positive status
 - **AI Explainer** — Streaming SSE-based explanations with separate Developer View, Merchant View, and Risk Signals tabs
-- **Confidence Meter** — Visual 0-100% fraud confidence score with verdict label
+- **Revenue Impact Calculator** — After rule simulation, shows false positives recovered, estimated monthly revenue recovered at 1,000 txn/mo, and legitimate transactions newly blocked
 - **5-Step Rule Optimizer** — Agentic loop: fetch → analyze → generate rule → simulate → recommend
-- **Demo Mode** — Works completely without any API keys using 10 synthetic transactions (3 fraud, 3 legitimate, 2 ambiguous, 2 false positives)
+- **Demo Mode** — Works with pre-loaded Stripe test data; no setup required
 - **Rate limiting** — 20 AI analyses per IP per day
 - **Mobile responsive** — Full Tailwind CSS responsive design
 
@@ -33,97 +65,27 @@ Radar Copilot solves three specific problems:
 | Framework | Next.js 14 App Router |
 | Language | TypeScript (strict) |
 | Styling | Tailwind CSS |
-| AI | OpenRouter (nvidia/nemotron-super-49b-v1:free) via OpenAI SDK |
+| AI | OpenRouter (`nvidia/nemotron-3-super-120b-a12b:free`) via OpenAI SDK |
 | Payments | Stripe SDK v15 |
 | Streaming | SSE via ReadableStream |
 | Deploy | Vercel |
 
 ## Local Setup
 
-### Prerequisites
-
-- Node.js 18+
-- A free [OpenRouter](https://openrouter.ai/keys) account (for AI features)
-- A free [Stripe](https://dashboard.stripe.com/register) account (optional — demo mode works without it)
-
-### Install and run
-
 ```bash
-# Clone the repository
-git clone https://github.com/AliHasan-786/stripe-radar-copilot
-cd stripe-radar-copilot
-
-# Install dependencies
+git clone https://github.com/AliHasan-786/Stripe-APM
+cd Stripe-APM
 npm install
-
-# Set up environment variables
 cp .env.local.example .env.local
-# Edit .env.local with your keys
-
-# Start development server
+# Add OPENROUTER_API_KEY to .env.local
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Environment variables
-
-```bash
-# .env.local
-
-# Required for AI features
-OPENROUTER_API_KEY=sk-or-v1-...
-
-# Optional — app works in demo mode without this
-STRIPE_SECRET_KEY=sk_test_...
-```
-
-> The app runs fully in demo mode without any environment variables configured.
-
-## Deploy to Vercel
-
-### One-click deploy
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/AliHasan-786/stripe-radar-copilot)
-
-### Manual deploy
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-
-# Set environment variables in Vercel dashboard:
-# OPENROUTER_API_KEY — required
-# STRIPE_SECRET_KEY — optional
-```
-
-## Project Structure
-
-```
-stripe-radar-copilot/
-├── app/
-│   ├── layout.tsx              # Root layout with metadata
-│   ├── page.tsx                # Landing page
-│   ├── transactions/page.tsx   # Transaction Explorer
-│   ├── transaction/[id]/       # Transaction Explainer
-│   ├── optimize/page.tsx       # Rule Optimizer
-│   ├── settings/page.tsx       # API key settings
-│   └── api/
-│       ├── transactions/       # GET: fetch & normalize transactions
-│       ├── analyze/            # POST: stream SSE AI analysis
-│       └── optimize/           # POST: stream SSE 5-step optimizer
-├── components/                 # All UI components (Tailwind only)
-├── lib/                        # Stripe client, OpenRouter client, rate limiter, demo data
-├── prompts/                    # AI prompt templates
-└── vercel.json                 # Vercel deployment config
-```
-
 ## Demo Transactions
 
-The demo dataset includes 10 synthetic transactions covering the full risk spectrum:
+The dataset includes 10 Stripe test transactions covering the full risk spectrum:
 
 | Type | Count | Description |
 |------|-------|-------------|
@@ -131,6 +93,8 @@ The demo dataset includes 10 synthetic transactions covering the full risk spect
 | Legitimate | 3 | Risk 10-30, passed, 3DS authenticated, consistent geography |
 | Ambiguous | 2 | Risk 55-70, some signals, review outcome |
 | False positives | 2 | Risk 75-85 but 3DS authenticated + Gmail + returning card |
+
+The false positive transactions are the key demo case: high risk scores but strong authenticity signals — exactly the pattern Radar Copilot is designed to catch.
 
 ---
 

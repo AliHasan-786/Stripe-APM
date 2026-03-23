@@ -214,6 +214,14 @@ export async function POST(request: NextRequest) {
             return sum + (tx?.amount ?? 0);
           }, 0);
 
+        const totalTransactionValue = transactions.reduce((sum, t) => sum + t.amount, 0);
+        const avgTransactionValue =
+          transactions.length > 0 ? totalTransactionValue / transactions.length : 0;
+
+        // Project to monthly: false positive rate × 1,000 txn/mo baseline × avg transaction value
+        const falsePositiveRate = summary.falsePositivesRecovered / Math.max(transactions.length, 1);
+        const monthlyProjectedRecovery = Math.round(falsePositiveRate * 1000 * avgTransactionValue);
+
         enqueue({
           type: 'simulation',
           before: beforeCounts,
@@ -227,6 +235,9 @@ export async function POST(request: NextRequest) {
           summary: {
             ...summary,
             revenueRecovered,
+            avgTransactionValue: Math.round(avgTransactionValue),
+            monthlyProjectedRecovery,
+            sampleSize: transactions.length,
           },
         });
 
@@ -341,6 +352,12 @@ async function runMockOptimizer(
       return sum + (tx?.amount ?? 0);
     }, 0);
 
+  const totalTransactionValue = transactions.reduce((sum, t) => sum + t.amount, 0);
+  const avgTransactionValue =
+    transactions.length > 0 ? totalTransactionValue / transactions.length : 0;
+  const falsePositiveRate = summary.falsePositivesRecovered / Math.max(transactions.length, 1);
+  const monthlyProjectedRecovery = Math.round(falsePositiveRate * 1000 * avgTransactionValue);
+
   enqueue({
     type: 'simulation',
     before: beforeCounts,
@@ -351,7 +368,13 @@ async function runMockOptimizer(
       to: r.newOutcome,
       reason: r.reason,
     })),
-    summary: { ...summary, revenueRecovered },
+    summary: {
+      ...summary,
+      revenueRecovered,
+      avgTransactionValue: Math.round(avgTransactionValue),
+      monthlyProjectedRecovery,
+      sampleSize: transactions.length,
+    },
   });
 
   // Step 5
