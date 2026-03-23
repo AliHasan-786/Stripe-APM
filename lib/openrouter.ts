@@ -11,4 +11,4 @@ export function getOpenRouterClient(): OpenAI {
   });
 }
 
-export const FREE_MODEL = 'nvidia/nemotron-super-49b-v1:free';
+export const FREE_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free';

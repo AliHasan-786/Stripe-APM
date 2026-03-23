@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
             { role: 'user', content: userPrompt },
           ],
           stream: true,
-          max_tokens: 1500,
+          max_tokens: 3000,
         });
 
         let fullContent = '';
