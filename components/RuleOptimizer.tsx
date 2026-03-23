@@ -38,10 +38,9 @@ const STEP_LABELS = [
 
 interface RuleOptimizerProps {
   isDemoMode: boolean;
-  stripeKey?: string;
 }
 
-export default function RuleOptimizer({ isDemoMode, stripeKey }: RuleOptimizerProps) {
+export default function RuleOptimizer({ isDemoMode }: RuleOptimizerProps) {
   const [isRunning, setIsRunning] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const [steps, setSteps] = useState<StepStatus[]>(
@@ -85,7 +84,7 @@ export default function RuleOptimizer({ isDemoMode, stripeKey }: RuleOptimizerPr
       const response = await fetch('/api/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isDemoMode, stripeKey }),
+        body: JSON.stringify({ isDemoMode }),
       });
 
       if (!response.ok || !response.body) {
@@ -146,7 +145,7 @@ export default function RuleOptimizer({ isDemoMode, stripeKey }: RuleOptimizerPr
     } finally {
       setIsRunning(false);
     }
-  }, [isDemoMode, stripeKey, updateStep]);
+  }, [isDemoMode, updateStep]);
 
   const copyRule = useCallback(async () => {
     if (!generatedRule) return;

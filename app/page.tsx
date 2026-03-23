@@ -61,21 +61,21 @@ export default function HomePage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/transactions?demo=true"
+              href="/transactions"
               className="w-full sm:w-auto px-8 py-3.5 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition-all hover:scale-105 active:scale-95 shadow-lg shadow-purple-900/50"
             >
-              Try the Demo →
+              Explore Transactions →
             </Link>
             <Link
-              href="/settings"
+              href="/optimize"
               className="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg border border-white/20 transition-all"
             >
-              Connect your Stripe key
+              Run Rule Optimizer
             </Link>
           </div>
 
           <p className="text-sm text-slate-500 mt-4">
-            No API key required for demo mode · No payment data stored
+            No setup required · Powered by Stripe test data · AI runs at $0/query
           </p>
         </div>
       </section>
@@ -125,15 +125,15 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">How it works</h2>
           <p className="text-gray-500 mb-12">
-            Connect your Stripe test key or use demo data. The AI does the rest.
+            No setup required. Just click and explore.
           </p>
 
           <div className="space-y-6 text-left">
             {[
               {
                 step: '01',
-                title: 'Connect Stripe (or use demo)',
-                desc: 'Paste your Stripe test API key or click "Try the Demo" to explore with synthetic transaction data.',
+                title: 'Browse transactions',
+                desc: 'Open the Transaction Explorer to see a curated set of Stripe test transactions with color-coded risk scores and outcome badges.',
               },
               {
                 step: '02',
@@ -165,10 +165,10 @@ export default function HomePage() {
 
           <div className="mt-12">
             <Link
-              href="/transactions?demo=true"
+              href="/transactions"
               className="inline-block px-8 py-3.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-all hover:scale-105 active:scale-95 shadow-md"
             >
-              Get started with demo →
+              Get started →
             </Link>
           </div>
         </div>

@@ -16,19 +16,7 @@ function TransactionsContent() {
   const [isActuallyDemo, setIsActuallyDemo] = useState(false);
 
   useEffect(() => {
-    let stripeKey: string | null = null;
-    if (typeof window !== 'undefined') {
-      stripeKey = localStorage.getItem('stripeKey');
-    }
-
-    const params = new URLSearchParams();
-    if (isDemo || !stripeKey) {
-      params.set('demo', 'true');
-    } else {
-      params.set('stripeKey', stripeKey);
-    }
-
-    const url = `/api/transactions?${params.toString()}`;
+    const url = isDemo ? '/api/transactions?demo=true' : '/api/transactions';
 
     fetch(url)
       .then((res) => res.json())

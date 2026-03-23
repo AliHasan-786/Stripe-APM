@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import RuleOptimizer from '@/components/RuleOptimizer';
 import DemoModeBanner from '@/components/DemoModeBanner';
@@ -8,22 +8,6 @@ import DemoModeBanner from '@/components/DemoModeBanner';
 function OptimizeContent() {
   const searchParams = useSearchParams();
   const isDemo = searchParams.get('demo') === 'true';
-
-  const [stripeKey, setStripeKey] = useState<string | undefined>();
-  const [isActuallyDemo, setIsActuallyDemo] = useState(true);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const key = localStorage.getItem('stripeKey');
-      if (key) {
-        setStripeKey(key);
-        setIsActuallyDemo(false);
-      } else {
-        setIsActuallyDemo(true);
-      }
-    }
-    if (isDemo) setIsActuallyDemo(true);
-  }, [isDemo]);
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -35,7 +19,7 @@ function OptimizeContent() {
         </p>
       </div>
 
-      {isActuallyDemo && <DemoModeBanner className="mb-6" />}
+      {isDemo && <DemoModeBanner className="mb-6" />}
 
       {/* Info cards */}
       <div className="grid sm:grid-cols-3 gap-3 mb-8">
@@ -67,7 +51,7 @@ function OptimizeContent() {
         ))}
       </div>
 
-      <RuleOptimizer isDemoMode={isActuallyDemo} stripeKey={stripeKey} />
+      <RuleOptimizer isDemoMode={isDemo} />
     </div>
   );
 }

@@ -11,7 +11,6 @@ import type { DemoTransaction } from '@/lib/demo-transactions';
 
 interface OptimizeRequestBody {
   isDemoMode: boolean;
-  stripeKey?: string;
 }
 
 function sseData(payload: Record<string, unknown>): string {
@@ -52,7 +51,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const { isDemoMode, stripeKey } = body;
+  const { isDemoMode } = body;
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -68,8 +67,8 @@ export async function POST(request: NextRequest) {
 
         let transactions: DemoTransaction[] = demoTransactions;
 
-        if (!isDemoMode && stripeKey) {
-          const stripe = getStripeClient(stripeKey);
+        if (!isDemoMode) {
+          const stripe = getStripeClient();
           if (stripe) {
             try {
               const charges = await stripe.charges.list({ limit: 20, expand: ['data.outcome'] });

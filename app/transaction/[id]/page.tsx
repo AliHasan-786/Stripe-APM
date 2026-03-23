@@ -57,17 +57,9 @@ function TransactionDetailContent() {
 
   // Load transaction details
   useEffect(() => {
-    const stripeKey =
-      typeof window !== 'undefined' ? localStorage.getItem('stripeKey') : null;
+    const url = isDemo ? '/api/transactions?demo=true' : '/api/transactions';
 
-    const params = new URLSearchParams();
-    if (isDemo || !stripeKey) {
-      params.set('demo', 'true');
-    } else {
-      params.set('stripeKey', stripeKey);
-    }
-
-    fetch(`/api/transactions?${params.toString()}`)
+    fetch(url)
       .then((r) => r.json())
       .then((data: { transactions: DemoTransaction[] }) => {
         const found = data.transactions?.find((t) => t.id === id);
@@ -86,17 +78,13 @@ function TransactionDetailContent() {
     setAnalysisData(null);
     setStreamError(null);
 
-    const stripeKey =
-      typeof window !== 'undefined' ? localStorage.getItem('stripeKey') : null;
-
     try {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           transactionId: id,
-          isDemoMode: isDemo || !stripeKey,
-          stripeKey: stripeKey ?? undefined,
+          isDemoMode: isDemo,
         }),
       });
 

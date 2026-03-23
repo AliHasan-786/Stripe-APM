@@ -20,7 +20,7 @@ function HeaderInner() {
 
           <nav className="flex items-center gap-4 sm:gap-6 text-sm">
             <Link
-              href="/transactions?demo=true"
+              href="/transactions"
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Explorer
@@ -35,7 +35,7 @@ function HeaderInner() {
               href="/settings"
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
-              Settings
+              About
             </Link>
 
             {isDemo && (

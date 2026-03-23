@@ -9,7 +9,6 @@ import { buildExplainerUserPrompt } from '@/prompts/explainer-user';
 interface AnalyzeRequestBody {
   transactionId: string;
   isDemoMode: boolean;
-  stripeKey?: string;
 }
 
 function sseData(payload: Record<string, unknown>): string {
@@ -40,15 +39,15 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const { transactionId, isDemoMode, stripeKey } = body;
+  const { transactionId, isDemoMode } = body;
 
   let transaction: DemoTransaction | null = null;
 
-  if (isDemoMode || !stripeKey) {
+  if (isDemoMode) {
     transaction = getTransactionById(transactionId) ?? null;
   } else {
-    // Try to fetch from Stripe
-    const stripe = getStripeClient(stripeKey);
+    // Try to fetch from Stripe using server-side key
+    const stripe = getStripeClient();
     if (stripe) {
       try {
         const charge = await stripe.charges.retrieve(transactionId, {
