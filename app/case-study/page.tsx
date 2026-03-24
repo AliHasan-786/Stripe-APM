@@ -104,8 +104,8 @@ export default function CaseStudyPage() {
           </blockquote>
 
           <p className="text-gray-600 leading-relaxed text-base mb-6">
-            This is not a rare edge case. Industry research estimates that false positives cost
-            merchants{' '}
+            This is not a rare edge case. Javelin Strategy &amp; Research estimates that false
+            positives cost merchants{' '}
             <strong className="text-gray-800">2 to 13 times more</strong> than the fraud they
             prevent. For a $1M GMV merchant running Stripe with default Radar settings, that is
             roughly{' '}
@@ -121,12 +121,27 @@ export default function CaseStudyPage() {
             </p>
           </div>
 
-          <p className="text-gray-600 leading-relaxed text-base">
+          <p className="text-gray-600 leading-relaxed text-base mb-4">
             I built Stripe Radar Copilot to address three compounding failures in Stripe&apos;s
             current product: the explainability gap, the optimization gap, and the recovery gap.
             This document explains the problem, the product decisions I made, what I would measure,
             and what I would build next.
           </p>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-sm text-amber-900">
+            <p className="font-semibold mb-2">Discovery process</p>
+            <p className="leading-relaxed">
+              This product was grounded in secondary research across Stripe&apos;s developer
+              documentation, community forums (Stripe Discord, r/stripe), and merchant support
+              threads — where false positive complaints are the single most common Radar-related
+              topic. I also reviewed Stripe&apos;s public changelogs to identify gaps in Radar&apos;s
+              existing tooling, and drew on industry research from Javelin Strategy &amp; Research and
+              Aite-Novarica to quantify the problem. If I were shipping this inside Stripe, the next
+              step would be 8–10 discovery interviews with merchants in the target segment to
+              validate these hypotheses and pressure-test the solution design before committing to
+              an agentic architecture.
+            </p>
+          </div>
         </section>
 
         {/* ── Section 2: The Problem ── */}
@@ -641,7 +656,7 @@ export default function CaseStudyPage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/transactions"
+              href="/transactions?demo=true"
               className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition-all hover:scale-105 active:scale-95 shadow-md text-sm"
             >
               Try the product demo →

@@ -264,6 +264,42 @@ export default function RuleOptimizer({ isDemoMode }: RuleOptimizerProps) {
       {/* Simulation results */}
       {simulation && (
         <div className="space-y-4">
+          {/* Recommendation banner */}
+          {(() => {
+            const { falsePositivesRecovered, legitBlockedByMistake } = simulation.summary;
+            const recommended = falsePositivesRecovered > 0 && legitBlockedByMistake === 0;
+            const caution = falsePositivesRecovered > 0 && legitBlockedByMistake > 0 && legitBlockedByMistake < falsePositivesRecovered;
+            const noGain = falsePositivesRecovered === 0;
+            if (recommended) return (
+              <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-5 py-3.5">
+                <span className="text-green-600 text-lg">✓</span>
+                <div>
+                  <p className="text-sm font-semibold text-green-800">Recommended to deploy</p>
+                  <p className="text-xs text-green-700">Recovers false positives with no new legitimate transactions blocked.</p>
+                </div>
+              </div>
+            );
+            if (caution) return (
+              <div className="flex items-center gap-3 bg-yellow-50 border border-yellow-200 rounded-xl px-5 py-3.5">
+                <span className="text-yellow-600 text-lg">⚠</span>
+                <div>
+                  <p className="text-sm font-semibold text-yellow-800">Deploy with caution</p>
+                  <p className="text-xs text-yellow-700">Recovers {falsePositivesRecovered} false positive{falsePositivesRecovered !== 1 ? 's' : ''} but newly blocks {legitBlockedByMistake} legitimate transaction{legitBlockedByMistake !== 1 ? 's' : ''}. Review with your fraud team first.</p>
+                </div>
+              </div>
+            );
+            if (noGain) return (
+              <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-5 py-3.5">
+                <span className="text-gray-400 text-lg">—</span>
+                <div>
+                  <p className="text-sm font-semibold text-gray-700">No impact on current data</p>
+                  <p className="text-xs text-gray-500">The rule did not match any transactions in this sample. Consider adjusting the conditions.</p>
+                </div>
+              </div>
+            );
+            return null;
+          })()}
+
           {/* Business Impact highlight card */}
           <div className="bg-gradient-to-br from-purple-50 to-green-50 border border-purple-200 rounded-xl p-5 shadow-sm">
             <h3 className="text-sm font-semibold text-gray-700 mb-1">Business Impact</h3>
