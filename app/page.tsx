@@ -120,6 +120,28 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Case Study CTA */}
+      <section className="bg-slate-900 text-white py-16">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+          <p className="text-xs font-bold uppercase tracking-widest text-purple-400 mb-3">
+            Product Thinking
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            The product thinking behind it
+          </h2>
+          <p className="text-slate-400 text-base sm:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
+            This isn&apos;t just a demo. There&apos;s a 12-minute product case study explaining the
+            problem, the decisions, the metrics, and the roadmap.
+          </p>
+          <Link
+            href="/case-study"
+            className="inline-block px-8 py-3.5 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition-all hover:scale-105 active:scale-95 shadow-lg shadow-purple-900/50"
+          >
+            Read the case study →
+          </Link>
+        </div>
+      </section>
+
       {/* How it works */}
       <section className="py-20 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">

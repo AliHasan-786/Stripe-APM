@@ -32,6 +32,12 @@ function HeaderInner() {
               Optimizer
             </Link>
             <Link
+              href="/case-study"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Case Study
+            </Link>
+            <Link
               href="/settings"
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
