@@ -167,11 +167,13 @@ export default function CaseStudyPage() {
               </p>
             </div>
             <div className="bg-purple-50 border-l-4 border-purple-600 px-5 py-4 rounded-r-lg">
-              <p className="text-3xl font-bold text-purple-700">69%</p>
+              <p className="text-3xl font-bold text-purple-700">2–5×</p>
               <p className="text-sm text-purple-600 mt-1">
-                Of developers spend more than 2 hours per week debugging payment failures they
-                cannot explain
-                <span className="block mt-1 text-xs text-purple-500">2023 Stripe survey</span>
+                False declines outnumber actual fraud transactions for typical card-not-present
+                merchants
+                <span className="block mt-1 text-xs text-purple-500">
+                  Aite-Novarica Group, 2022
+                </span>
               </p>
             </div>
             <div className="bg-purple-50 border-l-4 border-purple-600 px-5 py-4 rounded-r-lg">
