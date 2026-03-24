@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 
 function HeaderInner() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const isDemo = searchParams.get('demo') === 'true';
 
   return (
@@ -21,25 +22,25 @@ function HeaderInner() {
           <nav className="flex items-center gap-4 sm:gap-6 text-sm">
             <Link
               href={isDemo ? '/transactions?demo=true' : '/transactions'}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
+              className={`transition-colors ${pathname === '/transactions' ? 'text-purple-700 font-semibold' : 'text-gray-600 hover:text-gray-900'}`}
             >
               Explorer
             </Link>
             <Link
               href={isDemo ? '/optimize?demo=true' : '/optimize'}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
+              className={`transition-colors ${pathname === '/optimize' ? 'text-purple-700 font-semibold' : 'text-gray-600 hover:text-gray-900'}`}
             >
               Optimizer
             </Link>
             <Link
               href="/case-study"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
+              className={`transition-colors ${pathname === '/case-study' ? 'text-purple-700 font-semibold' : 'text-gray-600 hover:text-gray-900'}`}
             >
               Case Study
             </Link>
             <Link
               href="/settings"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
+              className={`transition-colors ${pathname === '/settings' ? 'text-purple-700 font-semibold' : 'text-gray-600 hover:text-gray-900'}`}
             >
               About
             </Link>

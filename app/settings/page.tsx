@@ -57,7 +57,7 @@ export default function SettingsPage() {
 
       <div className="mt-6">
         <Link
-          href="/transactions"
+          href="/transactions?demo=true"
           className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm rounded-lg transition-colors"
         >
           View transactions →

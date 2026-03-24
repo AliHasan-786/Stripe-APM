@@ -32,3 +32,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ruflo / claude-flow (agent orchestration tooling — local only)
+.claude-flow/
+.mcp.json
+.solopreneur/
+CLAUDE.md
+.claude/

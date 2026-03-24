@@ -154,23 +154,23 @@ export default function HomePage() {
             {[
               {
                 step: '01',
-                title: 'Browse transactions',
-                desc: 'Open the Transaction Explorer to see a curated set of Stripe test transactions with color-coded risk scores and outcome badges.',
+                title: 'Explore transactions',
+                desc: 'Open the Transaction Explorer to see 10 curated Stripe test transactions — blocked fraud, legitimate passes, and false positives — with color-coded risk scores.',
               },
               {
                 step: '02',
-                title: 'Browse your transactions',
-                desc: 'See all recent transactions with color-coded risk scores, outcome badges, and false positive flags.',
+                title: 'Understand any decision',
+                desc: 'Click any transaction to get a streaming AI explanation of why Radar made its decision — with separate views for Risk Signals, Developers, and Merchant operators.',
               },
               {
                 step: '03',
-                title: 'Click any transaction to explain it',
-                desc: 'AI streams a real-time explanation of why Radar made its decision, with signals, developer notes, and merchant-friendly language.',
+                title: 'Generate a recovery rule',
+                desc: 'Run the 5-step Optimizer: the AI identifies false positive patterns, writes a targeted Stripe Radar DSL rule, and simulates it against your transaction history.',
               },
               {
                 step: '04',
-                title: 'Run the Rule Optimizer',
-                desc: 'A 5-step AI agent scans your history, identifies false positives, generates a Radar rule, simulates its impact, and gives you a clear recommendation.',
+                title: 'See the business impact',
+                desc: 'Get a concrete projection — false positives recovered, revenue/month at scale, and legitimate transactions newly at risk — before touching your live Radar configuration.',
               },
             ].map(({ step, title, desc }) => (
               <div key={step} className="flex gap-5 items-start">

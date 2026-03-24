@@ -359,6 +359,26 @@ export default function RuleOptimizer({ isDemoMode }: RuleOptimizerProps) {
         </div>
       )}
 
+      {/* Deploy CTA */}
+      {isDone && generatedRule && (
+        <div className="bg-gray-900 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-white font-semibold text-sm">Ready to deploy this rule?</p>
+            <p className="text-gray-400 text-xs mt-0.5">
+              Add it to your Stripe Radar dashboard → Rules → Add rule
+            </p>
+          </div>
+          <a
+            href="https://dashboard.stripe.com/radar/rules"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm rounded-lg transition-colors"
+          >
+            Open Stripe Radar →
+          </a>
+        </div>
+      )}
+
       {/* Disclaimer */}
       {(isRunning || isDone) && (
         <p className="text-xs text-gray-400 italic">

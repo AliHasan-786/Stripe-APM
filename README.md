@@ -1,6 +1,6 @@
 # Stripe Radar Copilot
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-stripe--radar--copilot.vercel.app-635BFF?style=for-the-badge&logo=vercel)](https://stripe-radar-copilot.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-stripe--apm.vercel.app-635BFF?style=for-the-badge&logo=vercel)](https://stripe-apm.vercel.app)
 [![Built with Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
 
@@ -48,7 +48,31 @@ If this shipped inside Stripe, I'd track:
 
 The most valuable next step is **collaborative rule review** — letting multiple team members comment on a proposed rule before it goes live, with a clear approval workflow. I didn't build this because the core value (generating a good rule + quantifying its impact) needs to be validated first. Adding collaboration before the single-player experience is proven would be premature.
 
-## Features
+## 5-minute demo walkthrough
+
+1. **[Open the live demo](https://stripe-apm.vercel.app)** — no login, no API key needed
+2. Click **"Explore Transactions →"** to see 10 synthetic transactions across the full risk spectrum
+3. Click any blocked or reviewed transaction to get an **AI explanation** of the fraud decision (Risk Signals / Developer / Merchant tabs)
+4. Navigate to **Optimizer** and click **"Analyze & Optimize"** — watch the 5-step agentic loop run
+5. See the generated Radar rule, the simulation (before/after breakdown), and the **Business Impact** card showing monthly revenue recovery
+6. Read the **[Case Study](/case-study)** for the full product thinking behind it
+
+The two most interesting transactions: **ch_demo_fp_001** and **ch_demo_fp_002** — high risk scores but 3DS-authenticated returning customers. These are the false positives the optimizer is designed to recover.
+
+## How this was built (AI-enabled development)
+
+This project was built entirely using [Claude Code](https://claude.ai/claude-code) — Anthropic's AI coding agent — as the primary development workflow. This is deliberate: the role I'm applying for explicitly values AI-enabled builders, and I wanted the portfolio project itself to demonstrate that working style.
+
+**What that looked like in practice:**
+
+- **Ideation → PRD → working prototype in one session.** I wrote a product requirements doc, then worked with Claude Code to build the full Next.js app, deploy to Vercel, and iterate on bugs — compressing a multi-week development cycle into hours.
+- **Debugging via conversation.** When the optimizer was timing out on Vercel (30s function limit vs. 35-45s AI call), I diagnosed it by reasoning through the SSE stream lifecycle and Vercel's execution model, then applied targeted fixes: bumping `maxDuration`, adding demo mode bypass, and `AbortController` fallbacks. No StackOverflow, no waiting.
+- **Agentic workflows for quality review.** I used [ruflo](https://github.com/ruvnet/ruflo) (an agent orchestration framework built on Claude) to run parallel reviews of the codebase — catching issues like a broken live demo URL in the README and missing `?demo=true` propagation across nav links.
+- **Iteration speed.** Every bug reported above was identified, fixed, committed, and deployed to production in a single session. The whole project — PRD to deployed app — was built and iterated in under 48 hours.
+
+This is the workflow I'd bring to Stripe: not AI as autocomplete, but AI as a collaborator for product thinking, architecture, debugging, and shipping.
+
+
 
 - **Transaction Explorer** — Browse and filter Stripe transactions by outcome, risk score, and false positive status
 - **AI Explainer** — Streaming SSE-based explanations with separate Developer View, Merchant View, and Risk Signals tabs
