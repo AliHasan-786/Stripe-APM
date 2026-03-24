@@ -107,8 +107,8 @@ export async function POST(request: NextRequest) {
         controller.enqueue(encoder.encode(sseData(data)));
       };
 
-      if (!process.env.OPENROUTER_API_KEY) {
-        // No API key — stream a mock analysis
+      // Demo mode always uses deterministic mock — never depends on OpenRouter
+      if (!process.env.OPENROUTER_API_KEY || isDemoMode) {
         enqueue({ type: 'text', content: buildMockAnalysis(transaction!) });
         enqueue({ type: 'done' });
         controller.close();

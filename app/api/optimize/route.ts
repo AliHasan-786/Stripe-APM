@@ -115,8 +115,8 @@ export async function POST(request: NextRequest) {
 
         enqueue({ type: 'transactions', count: transactions.length });
 
-        // If no OpenRouter key, run a mock 5-step analysis
-        if (!process.env.OPENROUTER_API_KEY) {
+        // Demo mode (or no key) always uses mock — never depends on OpenRouter
+        if (!process.env.OPENROUTER_API_KEY || isDemoMode) {
           await runMockOptimizer(transactions, enqueue);
           controller.close();
           return;
