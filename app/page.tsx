@@ -130,8 +130,8 @@ export default function HomePage() {
             The product thinking behind it
           </h2>
           <p className="text-slate-400 text-base sm:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
-            This isn&apos;t just a demo. There&apos;s a 12-minute product case study explaining the
-            problem, the decisions, the metrics, and the roadmap.
+            A full product case study: the problem framing, the decisions, the metrics, and what
+            I&apos;d build next.
           </p>
           <Link
             href="/case-study"

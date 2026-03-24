@@ -59,18 +59,22 @@ The most valuable next step is **collaborative rule review** — letting multipl
 
 The two most interesting transactions: **ch_demo_fp_001** and **ch_demo_fp_002** — high risk scores but 3DS-authenticated returning customers. These are the false positives the optimizer is designed to recover.
 
-## How this was built (AI-enabled development)
+## Built with AI, end to end
 
-This project was built entirely using [Claude Code](https://claude.ai/claude-code) — Anthropic's AI coding agent — as the primary development workflow. This is deliberate: the role I'm applying for explicitly values AI-enabled builders, and I wanted the portfolio project itself to demonstrate that working style.
+This project was built entirely using AI-native development tools — deliberately, because the role I'm applying for asks for AI-enabled builders and I wanted the portfolio to demonstrate that workflow directly.
 
-**What that looked like in practice:**
+| Tool | Role |
+|------|------|
+| **[Claude Code](https://claude.ai/claude-code)** | Primary development environment. All code written, debugged, and iterated through conversation. No IDE. |
+| **[Solopreneur plugin](https://github.com/anthropics/claude-code)** | PM-focused agent workflow for product spec writing, case study drafting, competitive research, and UX review. |
+| **[claude-flow / ruflo](https://github.com/ruvnet/ruflo)** | Multi-agent orchestration for parallel quality review — ran simultaneous PM review, UX audit, and code review agents, then applied all findings in one commit. |
 
-- **Ideation → PRD → working prototype in one session.** I wrote a product requirements doc, then worked with Claude Code to build the full Next.js app, deploy to Vercel, and iterate on bugs — compressing a multi-week development cycle into hours.
-- **Debugging via conversation.** When the optimizer was timing out on Vercel (30s function limit vs. 35-45s AI call), I diagnosed it by reasoning through the SSE stream lifecycle and Vercel's execution model, then applied targeted fixes: bumping `maxDuration`, adding demo mode bypass, and `AbortController` fallbacks. No StackOverflow, no waiting.
-- **Agentic workflows for quality review.** I used [ruflo](https://github.com/ruvnet/ruflo) (an agent orchestration framework built on Claude) to run parallel reviews of the codebase — catching issues like a broken live demo URL in the README and missing `?demo=true` propagation across nav links.
-- **Iteration speed.** Every bug reported above was identified, fixed, committed, and deployed to production in a single session. The whole project — PRD to deployed app — was built and iterated in under 48 hours.
+**What this compressed:**
+- PRD → deployed prototype in under 48 hours
+- Timeout bug (Vercel 30s limit vs. 45s AI pipeline): diagnosed SSE stream lifecycle, applied 4 targeted fixes, deployed — in one session
+- Parallel codebase review via ruflo caught a broken live demo URL, missing `?demo=true` propagation across 6 nav links, and a duplicate landing page step — all fixed and shipped before the next deploy
 
-This is the workflow I'd bring to Stripe: not AI as autocomplete, but AI as a collaborator for product thinking, architecture, debugging, and shipping.
+This is the workflow I'd bring to Stripe: AI as a collaborator for product thinking, architecture, debugging, and shipping — not autocomplete.
 
 
 
