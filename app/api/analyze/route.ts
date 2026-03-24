@@ -115,20 +115,27 @@ export async function POST(request: NextRequest) {
         return;
       }
 
+      // 45-second hard timeout — fall back to mock rather than hang
+      const abort = new AbortController();
+      const timeout = setTimeout(() => abort.abort(), 45_000);
+
       try {
         const userPrompt = buildExplainerUserPrompt(transaction!);
-        const stream = await getOpenRouterClient().chat.completions.create({
-          model: FREE_MODEL,
-          messages: [
-            { role: 'system', content: EXPLAINER_SYSTEM_PROMPT },
-            { role: 'user', content: userPrompt },
-          ],
-          stream: true,
-          max_tokens: 3000,
-        });
+        const aiStream = await getOpenRouterClient().chat.completions.create(
+          {
+            model: FREE_MODEL,
+            messages: [
+              { role: 'system', content: EXPLAINER_SYSTEM_PROMPT },
+              { role: 'user', content: userPrompt },
+            ],
+            stream: true,
+            max_tokens: 1500,
+          },
+          { signal: abort.signal }
+        );
 
         let fullContent = '';
-        for await (const chunk of stream) {
+        for await (const chunk of aiStream) {
           const delta = chunk.choices[0]?.delta?.content ?? '';
           if (delta) {
             fullContent += delta;
@@ -146,9 +153,20 @@ export async function POST(request: NextRequest) {
 
         enqueue({ type: 'done' });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'AI analysis failed';
-        enqueue({ type: 'error', message });
-        enqueue({ type: 'done' });
+        // On timeout or API error, fall back to deterministic mock analysis
+        const isTimeout =
+          error instanceof Error &&
+          (error.name === 'AbortError' || error.message.includes('aborted'));
+        if (isTimeout) {
+          enqueue({ type: 'text', content: buildMockAnalysis(transaction!) });
+          enqueue({ type: 'done' });
+        } else {
+          const message = error instanceof Error ? error.message : 'AI analysis failed';
+          enqueue({ type: 'error', message });
+          enqueue({ type: 'done' });
+        }
+      } finally {
+        clearTimeout(timeout);
       }
 
       controller.close();

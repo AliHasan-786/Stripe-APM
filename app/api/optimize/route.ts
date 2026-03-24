@@ -25,7 +25,7 @@ async function nonStreamCompletion(systemPrompt: string, userPrompt: string): Pr
       { role: 'user', content: userPrompt },
     ],
     stream: false,
-    max_tokens: 2000,
+    max_tokens: 800,
   });
   return response.choices[0]?.message?.content ?? '';
 }
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
             { role: 'user', content: step2Prompt },
           ],
           stream: true,
-          max_tokens: 2000,
+          max_tokens: 800,
         })) {
           const delta = chunk.choices[0]?.delta?.content ?? '';
           if (delta) {
@@ -262,7 +262,7 @@ export async function POST(request: NextRequest) {
             { role: 'user', content: step5Prompt },
           ],
           stream: true,
-          max_tokens: 2000,
+          max_tokens: 800,
         })) {
           const delta = chunk.choices[0]?.delta?.content ?? '';
           if (delta) {
