@@ -25,7 +25,7 @@ async function nonStreamCompletion(systemPrompt: string, userPrompt: string): Pr
       { role: 'user', content: userPrompt },
     ],
     stream: false,
-    max_tokens: 800,
+    max_tokens: 1500,
   });
   return response.choices[0]?.message?.content ?? '';
 }
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
           if (stripe) {
             try {
               const charges = await stripe.charges.list({ limit: 20, expand: ['data.outcome'] });
-              transactions = charges.data.map((charge) => {
+              const fetched = charges.data.map((charge) => {
                 const outcome = charge.outcome;
                 let outcomeType: 'pass' | 'block' | 'review' = 'pass';
                 if (outcome?.type === 'blocked') outcomeType = 'block';
@@ -107,6 +107,10 @@ export async function POST(request: NextRequest) {
                   description: charge.description ?? 'Stripe charge',
                 };
               });
+              // Only replace demo data if Stripe returned real transactions
+              if (fetched.length > 0) {
+                transactions = fetched;
+              }
             } catch {
               transactions = demoTransactions;
             }
@@ -115,8 +119,8 @@ export async function POST(request: NextRequest) {
 
         enqueue({ type: 'transactions', count: transactions.length });
 
-        // Demo mode (or no key) always uses mock — never depends on OpenRouter
-        if (!process.env.OPENROUTER_API_KEY || isDemoMode) {
+        // Demo mode always uses mock — never depends on OpenRouter
+        if (isDemoMode || !process.env.OPENROUTER_API_KEY) {
           await runMockOptimizer(transactions, enqueue);
           controller.close();
           return;
@@ -134,7 +138,7 @@ export async function POST(request: NextRequest) {
             { role: 'user', content: step2Prompt },
           ],
           stream: true,
-          max_tokens: 800,
+          max_tokens: 1200,
         })) {
           const delta = chunk.choices[0]?.delta?.content ?? '';
           if (delta) {
@@ -262,7 +266,7 @@ export async function POST(request: NextRequest) {
             { role: 'user', content: step5Prompt },
           ],
           stream: true,
-          max_tokens: 800,
+          max_tokens: 1200,
         })) {
           const delta = chunk.choices[0]?.delta?.content ?? '';
           if (delta) {

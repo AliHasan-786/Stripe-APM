@@ -61,13 +61,13 @@ export default function HomePage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/transactions"
+              href="/transactions?demo=true"
               className="w-full sm:w-auto px-8 py-3.5 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition-all hover:scale-105 active:scale-95 shadow-lg shadow-purple-900/50"
             >
               Explore Transactions →
             </Link>
             <Link
-              href="/optimize"
+              href="/optimize?demo=true"
               className="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg border border-white/20 transition-all"
             >
               Run Rule Optimizer
@@ -187,7 +187,7 @@ export default function HomePage() {
 
           <div className="mt-12">
             <Link
-              href="/transactions"
+              href="/transactions?demo=true"
               className="inline-block px-8 py-3.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-all hover:scale-105 active:scale-95 shadow-md"
             >
               Get started →

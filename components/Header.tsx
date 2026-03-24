@@ -20,13 +20,13 @@ function HeaderInner() {
 
           <nav className="flex items-center gap-4 sm:gap-6 text-sm">
             <Link
-              href="/transactions"
+              href={isDemo ? '/transactions?demo=true' : '/transactions'}
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Explorer
             </Link>
             <Link
-              href="/optimize"
+              href={isDemo ? '/optimize?demo=true' : '/optimize'}
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Optimizer
