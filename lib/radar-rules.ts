@@ -147,7 +147,10 @@ export function simulateRule(
     }
 
     const matches = evaluateConditions(rule.conditions, tx);
-    const newOutcome = matches ? rule.action : tx.outcome;
+    // Normalize 'allow' → 'pass': Stripe Radar uses 'allow' in rules
+    // but transaction outcomes are stored as 'pass'/'block'/'review'
+    const ruleOutcome = rule.action === 'allow' ? 'pass' : rule.action;
+    const newOutcome = matches ? ruleOutcome : tx.outcome;
     const changed = newOutcome !== tx.outcome;
 
     return {
@@ -156,7 +159,7 @@ export function simulateRule(
       newOutcome,
       changed,
       reason: matches
-        ? `Rule matched — action changed to '${rule.action}'`
+        ? `Rule matched — outcome changed to '${rule.action}'`
         : 'Rule did not match — outcome unchanged',
     };
   });
@@ -171,10 +174,7 @@ export function simulateRule(
       (r) => r.changed && r.originalOutcome !== 'pass' && r.newOutcome === 'pass'
     ).length,
     legitBlockedByMistake: results.filter(
-      (r) =>
-        r.changed &&
-        r.originalOutcome === 'pass' &&
-        r.newOutcome === 'block'
+      (r) => r.changed && r.originalOutcome === 'pass' && r.newOutcome === 'block'
     ).length,
   };
 
